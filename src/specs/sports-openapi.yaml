@@ -1,0 +1,92 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Sports API
+  description: An API for sports apps or whatever
+paths:
+  /sports:
+    get:
+      description: Returns all sports
+      tags: ["sports"]
+      operationId: "sports-get"
+      responses: 
+        "200":
+          description: Successful response
+          content: 
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/SportList"
+  /sports/{id}:
+    get:
+      description: Returns a sport by id
+      tags: ["sports"]
+      operationId: "sports-get-one"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The sport id.
+          schema:
+            type: integer
+            format: int64
+      responses: 
+        "200":
+          description: Successful response
+          content: 
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/Sport"
+        "404":
+          description: Sport not found
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    SportList: 
+      type: "array"
+      items: 
+        $ref: "#/components/schemas/Sport"
+    Sport: 
+      type: "object"
+      required:
+        - id
+        - name
+        - isTeam
+        - defaultGamemode
+        - defaultNrOfSidePlaces
+      properties:
+        id:
+          type: "integer"
+        name:
+          type: "string"
+        isTeam:
+          type: "boolean"
+        customId:
+          type: "integer"
+        defaultGamemode: 
+          $ref: "#/components/schemas/Gamemode"
+        defaultNrOfSidePlaces:
+          type: "integer"
+    Gamemode:
+      type: string
+      oneOf:
+        - title: Single
+          const: "single"
+        - title: Against
+          const: "against"
+        - title: AllInOneGame
+          const: "allInOneGame"
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
